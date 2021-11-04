@@ -1,15 +1,18 @@
 package router
 
 import (
+	"github.com/duiying/go-demo/module/user"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func SetupRouter() *gin.Engine {
-	router := gin.Default()
-	// 添加 Get 请求路由
-	router.GET("/", func(context *gin.Context) {
+func Init(app *gin.Engine) *gin.Engine {
+	app.GET("/", func(context *gin.Context) {
 		context.String(http.StatusOK, "hello gin")
 	})
-	return router
+
+	// 用户相关
+	app.GET("/user/find", user.Find)
+
+	return app
 }
