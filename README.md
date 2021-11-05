@@ -1,5 +1,24 @@
 # go-demo
 
+### 介绍
+
+本项目为 Go 语言的练手项目，实现了一个 `user` 模块 CRUD 的 API，在练手的过程中实践了如下知识点：    
+
+- 路由
+- 中间件
+- MySQL
+- 日志
+- 代码分层
+
+代码分层：  
+
+- controller：控制器层，负责校验参数
+- logic：逻辑层，负责处理实际业务逻辑
+- dao：数据库层，负责执行 SQL
+- model：模型层，负责封装结构体以及部分字段 Map
+
+### 如何运行
+
 1、下载  
 
 2、配置文件  
@@ -8,9 +27,9 @@
 cp .env.example .env
 ```
 
-然后修改 `.env` 文件中的配置项。  
+然后修改 `.env` 文件中的配置项（包括日志目录、数据库配置等）。  
 
-3、数据准备  
+3、准备测试数据  
 
 ```SQL
 CREATE DATABASE passport DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;
@@ -31,7 +50,6 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
 INSERT INTO `user` VALUES (1, 'duiying', 'duiying@gmail.com', 1, '2021-11-04 16:53:33', '2021-11-04 16:53:33');
-COMMIT;
 ```
 
 4、启动  
@@ -39,3 +57,7 @@ COMMIT;
 ```sh
 go run main.go
 ```
+
+5、访问 API  
+
+[127.0.0.1:9551](http://127.0.0.1:9551)

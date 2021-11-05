@@ -1,5 +1,33 @@
 package user
 
-func find4Logic(id int) User {
-	return find4Dao(id)
+import "github.com/duiying/go-demo/response"
+
+func Find4Logic(id int) User {
+	return Find4Dao(id)
+}
+
+func Search4Logic(p int, size int, id int, name string, email string) response.List {
+	total := Count4Dao(id, name, email)
+	list := List4Dao(p, size, id, name, email)
+	data := response.List{
+		P: p,
+		Size: size,
+		Total: total,
+		List: list,
+	}
+	return data
+}
+
+func Update4Logic(user User) int {
+	// 先查询记录是否存在
+	exist := Find4Dao(user.ID)
+	if exist.ID == 0 {
+		return response.ErrorCode
+	}
+
+	return Update4Dao(user)
+}
+
+func Create4Logic(user User) int {
+	return Create4Dao(user)
 }

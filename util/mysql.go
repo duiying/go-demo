@@ -6,6 +6,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"os"
+	"strconv"
 )
 
 var Db *sql.DB
@@ -16,6 +17,9 @@ func InitMySQL()  {
 	pass := os.Getenv("DB_PASSWORD")
 	host := os.Getenv("DB_HOST")
 	port := os.Getenv("DB_PORT")
+	maxConn, _ := strconv.Atoi(os.Getenv("DB_MAX_CONNECTIONS"))
+	maxIdleConn, _ := strconv.Atoi(os.Getenv("DB_MAX_IDLE_CONNECTIONS"))
+
 	var err error
 	Db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, pass, host, port, db))
 	if err != nil {
@@ -27,6 +31,6 @@ func InitMySQL()  {
 		return
 	}
 
-	Db.SetMaxOpenConns(10)
-	Db.SetMaxIdleConns(10)
+	Db.SetMaxOpenConns(maxConn)
+	Db.SetMaxIdleConns(maxIdleConn)
 }

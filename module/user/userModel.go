@@ -1,5 +1,8 @@
 package user
 
+// 允许的 root 值
+var AllowedRootMap = map[int]string{0: "否", 1: "是"}
+
 type User struct {
 	ID    		int   	`json:"id"`
 	Name  		string	`json:"name"`
