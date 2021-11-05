@@ -61,3 +61,8 @@ go run main.go
 5、访问 API  
 
 [127.0.0.1:9551](http://127.0.0.1:9551)
+
+### TODO
+
+- 防 SQL 注入
+- Redis
