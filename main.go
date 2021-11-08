@@ -1,8 +1,9 @@
 package main
 
 import (
+	"github.com/duiying/go-demo/pkg/mysql"
+	"github.com/duiying/go-demo/pkg/redis"
 	"github.com/duiying/go-demo/router"
-	"github.com/duiying/go-demo/util"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
@@ -25,9 +26,9 @@ func main() {
 	// 路由
 	app = router.Init(app)
 	// MySQL
-	util.InitMySQL()
+	mysql.InitMySQL()
 	// Redis
-	util.InitRedis()
+	redis.InitRedis()
 
 	addr := ":" + os.Getenv("HTTP_PORT")
 	_ = app.Run(addr)

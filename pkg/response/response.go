@@ -13,7 +13,7 @@ const CreateError = 4003
 var codeMap = map[int]string{
 	ServerError: "服务异常",
 	ParamsError: "参数错误",
-	ExistError: "记录不存在",
+	ExistError:  "记录不存在",
 }
 
 // 列表返回的结构体

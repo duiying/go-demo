@@ -2,16 +2,16 @@ package user
 
 import (
 	"fmt"
-	"github.com/duiying/go-demo/logger"
-	"github.com/duiying/go-demo/response"
-	"github.com/duiying/go-demo/util"
+	"github.com/duiying/go-demo/pkg/logger"
+	"github.com/duiying/go-demo/pkg/mysql"
+	response2 "github.com/duiying/go-demo/pkg/response"
 	"strings"
 )
 
 func Find4Dao(id int) User {
 	var u User
 	sql := "SELECT * FROM `user` WHERE id = ?"
-	row := util.Db.QueryRow(sql, id)
+	row := mysql.Db.QueryRow(sql, id)
 	err := row.Scan(&u.ID, &u.Name, &u.Email, &u.Root, &u.Mtime, &u.Ctime)
 	if err != nil {
 		logger.Error(fmt.Sprintf("user id %d 没有找到", id))
@@ -34,7 +34,7 @@ func List4Dao(p int, size int, id int, name string, email string) []User {
 	order := " ORDER BY `id` ASC"
 	limit := fmt.Sprintf(" LIMIT %d, %d", offset, size)
 	sql := "SELECT * FROM `user`" + where + order + limit
-	rows, err := util.Db.Query(sql)
+	rows, err := mysql.Db.Query(sql)
 	// 创建一个切片来存储数据
 	list := make([]User, 0)
 	if err != nil {
@@ -65,7 +65,7 @@ func Count4Dao(id int, name string, email string) int {
 
 	sql := "SELECT count(*) FROM `user`" + where
 
-	err := util.Db.QueryRow(sql).Scan(&count)
+	err := mysql.Db.QueryRow(sql).Scan(&count)
 
 	if err == nil {
 		return count
@@ -87,10 +87,10 @@ func Update4Dao(user User) int {
 	sql = strings.TrimRight(sql, ",")
 	where := fmt.Sprintf(" WHERE `id` = %d", user.ID)
 	sql += where
-	res, err := util.Db.Exec(sql)
+	res, err := mysql.Db.Exec(sql)
 	if err != nil {
 		logger.Error("SQL 错误了：" + sql)
-		return response.ErrorCode
+		return response2.ErrorCode
 	}
 	affected, err := res.RowsAffected()
 	if err != nil {
@@ -102,10 +102,10 @@ func Update4Dao(user User) int {
 func Create4Dao(user User) int {
 	sql := "INSERT INTO `user` (name, email, root) values(?, ?, ?)"
 
-	res, err := util.Db.Exec(sql, user.Name, user.Email, user.Root)
+	res, err := mysql.Db.Exec(sql, user.Name, user.Email, user.Root)
 	if err != nil {
 		logger.Error(fmt.Sprintf("创建用户失败 name：%s email：%s root：%d", user.Name, user.Email, user.Root))
-		return response.ErrorCode
+		return response2.ErrorCode
 	}
 
 	id, _ := res.LastInsertId()
