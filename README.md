@@ -7,6 +7,7 @@
 - 路由
 - 中间件
 - MySQL
+- Redis
 - 日志
 - 代码分层
 
@@ -65,4 +66,3 @@ go run main.go
 ### TODO
 
 - 防 SQL 注入
-- Redis

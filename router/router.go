@@ -19,6 +19,7 @@ func Init(app *gin.Engine) *gin.Engine {
 	app.GET("/user/search", user.Search)
 	app.POST("/user/update", user.Update)
 	app.POST("/user/create", user.Create)
+	app.GET("/user/redis", user.Redis)
 
 	return app
 }

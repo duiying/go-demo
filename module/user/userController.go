@@ -4,9 +4,11 @@ import (
 	"github.com/duiying/go-demo/response"
 	"github.com/duiying/go-demo/util"
 	"github.com/gin-gonic/gin"
+	"github.com/gomodule/redigo/redis"
 	"strconv"
 )
 
+// 多条
 func Search(c *gin.Context) {
 	p, _ := strconv.Atoi(c.DefaultQuery("p", util.DefaultP))
 	size, _ := strconv.Atoi(c.DefaultQuery("size", util.DefaultSize))
@@ -18,6 +20,7 @@ func Search(c *gin.Context) {
 	response.Success(c, data)
 }
 
+// 单条
 func Find(c *gin.Context) {
 	id, _ := strconv.Atoi(c.DefaultQuery("id", "0"))
 	if id == 0 {
@@ -35,6 +38,7 @@ func Find(c *gin.Context) {
 	response.Success(c, user)
 }
 
+// 更新
 func Update(c *gin.Context) {
 	id, _ := strconv.Atoi(c.DefaultQuery("id", "0"))
 
@@ -77,6 +81,7 @@ func Update(c *gin.Context) {
 	response.Success(c, affected)
 }
 
+// 创建
 func Create(c *gin.Context) {
 	name := c.DefaultQuery("name", "")
 	email := c.DefaultQuery("email", "")
@@ -107,5 +112,14 @@ func Create(c *gin.Context) {
 	}
 
 	response.Success(c, lastInsertId)
+}
+
+// 测试 Redis
+func Redis(c *gin.Context)  {
+	key := "key1"
+	val := "val1"
+	_, _ = util.Get().Do("SET", key, val)
+	res, _ := redis.String(util.Get().Do("GET", key))
+	response.Success(c, res)
 }
 

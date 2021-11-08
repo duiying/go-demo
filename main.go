@@ -26,7 +26,9 @@ func main() {
 	app = router.Init(app)
 	// MySQL
 	util.InitMySQL()
+	// Redis
+	util.InitRedis()
 
 	addr := ":" + os.Getenv("HTTP_PORT")
-	app.Run(addr)
+	_ = app.Run(addr)
 }
