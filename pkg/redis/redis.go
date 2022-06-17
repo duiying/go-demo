@@ -3,6 +3,7 @@ package redis
 import (
 	"fmt"
 	"github.com/gomodule/redigo/redis"
+	"github.com/xiam/to"
 	"os"
 	"time"
 )
@@ -15,9 +16,9 @@ func InitRedis() {
 	pass := os.Getenv("REDIS_PASS")
 	server := fmt.Sprintf("%s:%s", host, port)
 	pool = &redis.Pool{
-		MaxActive:   100,
-		MaxIdle:     100,
-		IdleTimeout: 240 * time.Second,
+		MaxActive:   to.Int(os.Getenv("REDIS_MAX_CONNECTIONS")),
+		MaxIdle:     to.Int(os.Getenv("REDIS_MAX_IDLE_CONNECTIONS")),
+		IdleTimeout: time.Duration(to.Int(os.Getenv("REDIS_MAX_IDLE_TIMEOUT"))) * time.Second,
 		Wait:        true,
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", server)
