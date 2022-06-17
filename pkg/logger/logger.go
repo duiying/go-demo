@@ -11,45 +11,39 @@ import (
 
 var levelMap = map[logrus.Level]string{
 	logrus.DebugLevel: "debug",
-	logrus.InfoLevel: "info",
-	logrus.WarnLevel: "warning",
+	logrus.InfoLevel:  "info",
+	logrus.WarnLevel:  "warning",
 	logrus.FatalLevel: "fatal",
 	logrus.ErrorLevel: "error",
 	logrus.PanicLevel: "panic",
 	logrus.TraceLevel: "trace",
 }
 
-// Debug debug
 func Debug(info interface{}) {
 	logToFile(logrus.DebugLevel, info)
 	return
 }
 
-// Info info
 func Info(info interface{}) {
 	logToFile(logrus.InfoLevel, info)
 	return
 }
 
-// Warn warn
 func Warn(info interface{}) {
 	logToFile(logrus.WarnLevel, info)
 	return
 }
 
-// Fatal fatal
 func Fatal(info interface{}) {
 	logToFile(logrus.FatalLevel, info)
 	return
 }
 
-// Error error
 func Error(info interface{}) {
 	logToFile(logrus.ErrorLevel, info)
 	return
 }
 
-// Panic panic
 func Panic(info interface{}) {
 	logToFile(logrus.PanicLevel, info)
 	return
@@ -82,7 +76,9 @@ func logToFile(level logrus.Level, something interface{}) {
 		if err != nil {
 			return
 		}
-		defer f.Close()
+		defer func() {
+			_ = f.Close()
+		}()
 	}
 	src, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
