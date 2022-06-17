@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/duiying/go-demo/middleware"
 	"github.com/duiying/go-demo/module/user"
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -12,7 +13,11 @@ func Init(app *gin.Engine) *gin.Engine {
 		context.String(http.StatusOK, "Hello Gin")
 	})
 
+	// 404
 	app.NoRoute(middleware.NotFound())
+
+	// pprof
+	pprof.Register(app)
 
 	// 用户相关
 	app.GET("/user/find", user.Find)

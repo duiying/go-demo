@@ -56,6 +56,7 @@ INSERT INTO `user` VALUES (1, 'duiying', 'duiying@gmail.com', 1, '2021-11-04 16:
 4、启动  
 
 ```sh
+go mod tidy
 go run main.go
 ```
 
