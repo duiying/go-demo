@@ -36,7 +36,7 @@ func InitRedis() {
 	}
 }
 
-// 获取实例
-func Get() redis.Conn {
+// GetInstance 获取 Redis 实例
+func GetInstance() redis.Conn {
 	return pool.Get()
 }

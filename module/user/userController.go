@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-// 多条
+// Search 多条
 func Search(c *gin.Context) {
 	p, _ := strconv.Atoi(c.DefaultQuery("p", constant.DefaultP))
 	size, _ := strconv.Atoi(c.DefaultQuery("size", constant.DefaultSize))
@@ -21,7 +21,7 @@ func Search(c *gin.Context) {
 	response2.Success(c, data)
 }
 
-// 单条
+// Find 单条
 func Find(c *gin.Context) {
 	id, _ := strconv.Atoi(c.DefaultQuery("id", "0"))
 	if id == 0 {
@@ -39,7 +39,7 @@ func Find(c *gin.Context) {
 	response2.Success(c, user)
 }
 
-// 更新
+// Update 更新
 func Update(c *gin.Context) {
 	id, _ := strconv.Atoi(c.DefaultQuery("id", "0"))
 
@@ -82,7 +82,7 @@ func Update(c *gin.Context) {
 	response2.Success(c, affected)
 }
 
-// 创建
+// Create 创建
 func Create(c *gin.Context) {
 	name := c.DefaultQuery("name", "")
 	email := c.DefaultQuery("email", "")
@@ -115,12 +115,11 @@ func Create(c *gin.Context) {
 	response2.Success(c, lastInsertId)
 }
 
-// 测试 Redis
-func Redis(c *gin.Context)  {
+// Redis 测试 Redis
+func Redis(c *gin.Context) {
 	key := "key1"
 	val := "val1"
-	_, _ = redis2.Get().Do("SET", key, val)
-	res, _ := redis.String(redis2.Get().Do("GET", key))
+	_, _ = redis2.GetInstance().Do("SET", key, val)
+	res, _ := redis.String(redis2.GetInstance().Do("GET", key))
 	response2.Success(c, res)
 }
-

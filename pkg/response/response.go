@@ -16,12 +16,12 @@ var codeMap = map[int]string{
 	ExistError:  "记录不存在",
 }
 
-// 列表返回的结构体
+// List 列表返回的结构体
 type List struct {
-	P int `json:"p"`
-	Size int `json:"size"`
-	List interface{} `json:"list"`
-	Total int `json:"total"`
+	P     int         `json:"p"`
+	Size  int         `json:"size"`
+	List  interface{} `json:"list"`
+	Total int         `json:"total"`
 }
 
 // 根据 code 返回错误信息
@@ -49,4 +49,3 @@ func Success(c *gin.Context, data interface{}) {
 	})
 	return
 }
-
