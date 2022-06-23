@@ -1,8 +1,10 @@
 package router
 
 import (
-	"github.com/duiying/go-demo/middleware"
+	"github.com/duiying/go-demo/module/agent"
+	"github.com/duiying/go-demo/module/test"
 	"github.com/duiying/go-demo/module/user"
+	"github.com/duiying/go-demo/pkg/middleware"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -25,6 +27,14 @@ func Init(app *gin.Engine) *gin.Engine {
 	app.POST("/user/update", user.Update)
 	app.POST("/user/create", user.Create)
 	app.GET("/user/redis", user.Redis)
+
+	// 测试
+	app.GET("/test", test.CustomTest)
+
+	// WebSocket
+	agent.InitHub()
+	go agent.RunHub()
+	app.GET("/agent", agent.WS)
 
 	return app
 }

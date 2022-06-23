@@ -4,16 +4,21 @@ import "github.com/gin-gonic/gin"
 
 const ErrorCode = -1
 
+const ServerInternalError = 500
 const ServerError = 4000
 const ParamsError = 4001
 const ExistError = 4002
 const CreateError = 4003
+const NotWebSocketError = 4004
 
 // 错误码 & 错误信息映射
 var codeMap = map[int]string{
-	ServerError: "服务异常",
-	ParamsError: "参数错误",
-	ExistError:  "记录不存在",
+	ServerInternalError: "内部错误",
+	ServerError:         "服务异常",
+	ParamsError:         "参数错误",
+	ExistError:          "记录不存在",
+	CreateError:         "创建失败",
+	NotWebSocketError:   "not websocket",
 }
 
 // List 列表返回的结构体
@@ -24,7 +29,7 @@ type List struct {
 	Total int         `json:"total"`
 }
 
-// 根据 code 返回错误信息
+// GetMessageByCode 根据 code 返回错误信息
 func GetMessageByCode(code int) string {
 	if message, ok := codeMap[code]; ok {
 		return message
@@ -37,6 +42,7 @@ func Fail(c *gin.Context, code int) {
 		"code":    code,
 		"message": GetMessageByCode(code),
 		"data":    "",
+		"traceId": c.GetString("traceId"),
 	})
 	return
 }
@@ -46,6 +52,7 @@ func Success(c *gin.Context, data interface{}) {
 		"code":    0,
 		"message": "",
 		"data":    data,
+		"traceId": c.GetString("traceId"),
 	})
 	return
 }

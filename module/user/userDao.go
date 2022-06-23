@@ -14,7 +14,7 @@ func Find4Dao(id int) User {
 	row := mysql.Db.QueryRow(sql, id)
 	err := row.Scan(&u.ID, &u.Name, &u.Email, &u.Root, &u.Mtime, &u.Ctime)
 	if err != nil {
-		logger.Error(fmt.Sprintf("user id %d 没有找到", id))
+		logger.Error("user id 没有找到", "id", id)
 	}
 	return u
 }
@@ -89,7 +89,7 @@ func Update4Dao(user User) int {
 	sql += where
 	res, err := mysql.Db.Exec(sql)
 	if err != nil {
-		logger.Error("SQL 错误了：" + sql)
+		logger.Error("SQL 错误了", "sql", sql)
 		return response2.ErrorCode
 	}
 	affected, err := res.RowsAffected()
@@ -104,7 +104,7 @@ func Create4Dao(user User) int {
 
 	res, err := mysql.Db.Exec(sql, user.Name, user.Email, user.Root)
 	if err != nil {
-		logger.Error(fmt.Sprintf("创建用户失败 name：%s email：%s root：%d", user.Name, user.Email, user.Root))
+		logger.Error("创建用户失败", "name", user.Name, "email", user.Email, "root", user.Root)
 		return response2.ErrorCode
 	}
 

@@ -12,10 +12,10 @@ func Search4Logic(p int, size int, id int, name string, email string) response2.
 	total := Count4Dao(id, name, email)
 	list := List4Dao(p, size, id, name, email)
 	data := response2.List{
-		P: p,
-		Size: size,
+		P:     p,
+		Size:  size,
 		Total: total,
-		List: list,
+		List:  list,
 	}
 	return data
 }

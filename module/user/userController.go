@@ -3,7 +3,7 @@ package user
 import (
 	"github.com/duiying/go-demo/pkg/constant"
 	redis2 "github.com/duiying/go-demo/pkg/redis"
-	response2 "github.com/duiying/go-demo/pkg/response"
+	"github.com/duiying/go-demo/pkg/response"
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
 	"strconv"
@@ -18,25 +18,25 @@ func Search(c *gin.Context) {
 	email := c.DefaultQuery("email", "")
 
 	data := Search4Logic(p, size, id, name, email)
-	response2.Success(c, data)
+	response.Success(c, data)
 }
 
 // Find 单条
 func Find(c *gin.Context) {
 	id, _ := strconv.Atoi(c.DefaultQuery("id", "0"))
 	if id == 0 {
-		response2.Fail(c, response2.ParamsError)
+		response.Fail(c, response.ParamsError)
 		return
 	}
 
 	user := Find4Logic(id)
 
 	if user.ID == 0 {
-		response2.Fail(c, response2.ExistError)
+		response.Fail(c, response.ExistError)
 		return
 	}
 
-	response2.Success(c, user)
+	response.Success(c, user)
 }
 
 // Update 更新
@@ -45,7 +45,7 @@ func Update(c *gin.Context) {
 
 	// 更新 user，id 必传
 	if id == 0 {
-		response2.Fail(c, response2.ParamsError)
+		response.Fail(c, response.ParamsError)
 		return
 	}
 	name := c.DefaultQuery("name", "")
@@ -62,24 +62,24 @@ func Update(c *gin.Context) {
 	if user.Root != -1 {
 		_, ok := AllowedRootMap[user.Root]
 		if !ok {
-			response2.Fail(c, response2.ParamsError)
+			response.Fail(c, response.ParamsError)
 			return
 		}
 	}
 
 	// 需要更新的字段，至少传 1 个
 	if user.Root == -1 && user.Name == "" && user.Email == "" {
-		response2.Fail(c, response2.ParamsError)
+		response.Fail(c, response.ParamsError)
 		return
 	}
 
 	affected := Update4Logic(user)
-	if affected == response2.ErrorCode {
-		response2.Fail(c, response2.ExistError)
+	if affected == response.ErrorCode {
+		response.Fail(c, response.ExistError)
 		return
 	}
 
-	response2.Success(c, affected)
+	response.Success(c, affected)
 }
 
 // Create 创建
@@ -96,23 +96,23 @@ func Create(c *gin.Context) {
 	// 如果传了 root 参数，验证 root 参数的合法性
 	_, ok := AllowedRootMap[user.Root]
 	if !ok {
-		response2.Fail(c, response2.ParamsError)
+		response.Fail(c, response.ParamsError)
 		return
 	}
 
 	// 需要更新的字段，至少传 1 个
 	if user.Name == "" || user.Email == "" {
-		response2.Fail(c, response2.ParamsError)
+		response.Fail(c, response.ParamsError)
 		return
 	}
 
 	lastInsertId := Create4Logic(user)
-	if lastInsertId == response2.ErrorCode {
-		response2.Fail(c, response2.CreateError)
+	if lastInsertId == response.ErrorCode {
+		response.Fail(c, response.CreateError)
 		return
 	}
 
-	response2.Success(c, lastInsertId)
+	response.Success(c, lastInsertId)
 }
 
 // Redis 测试 Redis
@@ -121,5 +121,5 @@ func Redis(c *gin.Context) {
 	val := "val1"
 	_, _ = redis2.GetInstance().Do("SET", key, val)
 	res, _ := redis.String(redis2.GetInstance().Do("GET", key))
-	response2.Success(c, res)
+	response.Success(c, res)
 }

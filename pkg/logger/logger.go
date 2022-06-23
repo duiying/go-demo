@@ -1,9 +1,12 @@
 package logger
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/duiying/go-demo/pkg/config"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/sirupsen/logrus"
+	"github.com/xiam/to"
+	"io"
 	"os"
 	"path"
 	"time"
@@ -19,87 +22,94 @@ var levelMap = map[logrus.Level]string{
 	logrus.TraceLevel: "trace",
 }
 
-func Debug(info interface{}) {
-	logToFile(logrus.DebugLevel, info)
+func Debug(msg string, keysAndValues ...interface{}) {
+	logToFile(logrus.DebugLevel, msg, keysAndValues...)
 	return
 }
 
-func Info(info interface{}) {
-	logToFile(logrus.InfoLevel, info)
+func Info(msg string, keysAndValues ...interface{}) {
+	logToFile(logrus.InfoLevel, msg, keysAndValues...)
 	return
 }
 
-func Warn(info interface{}) {
-	logToFile(logrus.WarnLevel, info)
+func Warn(msg string, keysAndValues ...interface{}) {
+	logToFile(logrus.WarnLevel, msg, keysAndValues...)
 	return
 }
 
-func Fatal(info interface{}) {
-	logToFile(logrus.FatalLevel, info)
+func Fatal(msg string, keysAndValues ...interface{}) {
+	logToFile(logrus.FatalLevel, msg, keysAndValues...)
 	return
 }
 
-func Error(info interface{}) {
-	logToFile(logrus.ErrorLevel, info)
+func Error(msg string, keysAndValues ...interface{}) {
+	logToFile(logrus.ErrorLevel, msg, keysAndValues...)
 	return
 }
 
-func Panic(info interface{}) {
-	logToFile(logrus.PanicLevel, info)
+func Panic(msg string, keysAndValues ...interface{}) {
+	logToFile(logrus.PanicLevel, msg, keysAndValues...)
 	return
 }
 
 // 记录日志到文件
-func logToFile(level logrus.Level, something interface{}) {
+func logToFile(level logrus.Level, msg string, keysAndValues ...interface{}) {
 	var info string
-	switch value := something.(type) {
-	case string:
-		info = value
-	case map[string]interface{}:
-		jsonStr, err := json.Marshal(value)
+	var err error
+	var out io.Writer
+
+	if config.Debug { // Debug 模式下输出到控制台
+		out = os.Stdout
+	} else { // 其他模式下输出到日志文件
+		// 日志文件
+		logFilePath := os.Getenv("LOG_PATH")
+		today := time.Now().Format("20060102")
+		logFileName := fmt.Sprintf("%s.log.%s", levelMap[level], today)
+		fileName := path.Join(logFilePath, logFileName)
+		// 日志文件不存在时创建
+		isExist, _ := pathExists(fileName)
+		if !isExist {
+			f, err := os.Create(fileName)
+			if err != nil {
+				return
+			}
+			defer func() {
+				_ = f.Close()
+			}()
+		}
+		out, err = os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 		if err != nil {
+			fmt.Printf("Error OpenFile logger: %v \n", err)
 			return
 		}
-		info = string(jsonStr)
-	default:
-		return
-	}
-	// 日志文件
-	logFilePath := os.Getenv("LOG_PATH")
-	today := time.Now().Format("20060102")
-	logFileName := fmt.Sprintf("%s.log.%s", levelMap[level], today)
-	fileName := path.Join(logFilePath, logFileName)
-	// 日志文件不存在时创建
-	isExist, _ := pathExists(fileName)
-	if !isExist {
-		f, err := os.Create(fileName)
-		if err != nil {
-			return
-		}
-		defer func() {
-			_ = f.Close()
-		}()
-	}
-	src, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
-	if err != nil {
-		fmt.Printf("Error while logger: %v \n", err)
-		return
 	}
 
 	// 实例
 	logger := logrus.New()
-	logger.Out = src
+	logger.Out = out
 	logger.Formatter = &logrus.JSONFormatter{}
 	logger.SetLevel(logrus.DebugLevel)
 
-	// 记录日志
-	app := os.Getenv("APP_NAME")
+	// 组装日志内容
 	field := logrus.Fields{
-		"app": app,
+		"app": os.Getenv("APP_NAME"),
+		"tag": msg,
 	}
+	var lastKey string
+	for k, v := range keysAndValues {
+		if k%2 == 0 {
+			lastKey = toString(v)
+			if len(lastKey) < 1 {
+				return
+			}
+		} else {
+			field[lastKey] = toString(v)
+		}
+	}
+
 	switch level {
 	case logrus.DebugLevel:
-		logger.WithFields(field).Debug(info)
+		logger.WithFields(field).Debug()
 	case logrus.InfoLevel:
 		logger.WithFields(field).Info(info)
 	case logrus.WarnLevel:
@@ -124,4 +134,19 @@ func pathExists(path string) (bool, error) {
 		return false, nil
 	}
 	return false, err
+}
+
+func toString(something interface{}) string {
+	switch value := something.(type) {
+	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64, complex128, complex64, bool, string, []byte:
+		return to.String(value)
+	case error:
+		return value.Error()
+	default:
+		info, err := jsoniter.MarshalToString(value)
+		if err != nil {
+			return ""
+		}
+		return info
+	}
 }
