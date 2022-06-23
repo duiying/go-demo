@@ -24,6 +24,7 @@ func (conn *WSConn) rec() {
 	for {
 		_, data, err := conn.ws.ReadMessage()
 		if err != nil {
+			logger.Error("ws read message error", "err", err)
 			return
 		}
 		conn.recChan <- data
@@ -43,9 +44,11 @@ func (conn *WSConn) doRec() {
 				return
 			}
 			if len(data) < 1 {
+				logger.Error("ws rec data len error", "data", data)
 				return
 			}
 			logger.Debug("received websocket data", data)
+			hub.broadCast <- data
 		}
 	}
 }
